@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicers Royale - MVP Refactored</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .player-scores table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .player-scores th, .player-scores td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .player-scores th { background-color: #f2f2f2; }
+        .current-turn-row td:first-child { font-weight: bold; } /* Style for current player name */
+        .current-turn-highlight { background-color: #e7f3ff; } /* Applied dynamically if needed */
+        .dice-area { text-align: center; margin: 20px 0; }
+        .dice { font-size: 2.5em; margin: 5px; display: inline-block; border: 1px solid #aaa; background-color: #fff; padding: 10px 15px; min-width: 50px; text-align: center; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.2); }
+        .actions button, .menu button { padding: 12px 20px; font-size: 1.1em; margin: 5px; cursor: pointer; border: none; border-radius: 5px; background-color: #007bff; color: white; }
+        .actions button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .actions .stop-button { background-color: #28a745; }
+        .message { margin-top: 15px; padding: 15px; background-color: #e9ecef; border-radius: 5px; border-left: 5px solid #007bff; min-height: 50px; /* Ensure space for messages */ }
+        .menu { text-align: center; margin-bottom: 30px; }
+        h1, h2, h3 { text-align: center; color: #333; }
+        /* Style for game over message */
+        .game-over-message { font-weight: bold; color: #dc3545; text-align: center; font-size: 1.3em;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dicers Royale</h1>
+
+        {% if game %}
+            <h2>
+                {% if not game.game_over %}
+                    Ronda {{ game.current_round }} de {{ game.total_rounds }}
+                {% else %}
+                    Juego Terminado
+                {% endif %}
+            </h2>
+
+            <div class="player-scores">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Jugador</th>
+                            {% for round_num in range(1, game.total_rounds + 1) %}
+                                <th>Ronda {{ round_num }}</th>
+                            {% endfor %}
+                            <th>Puntaje Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# Ensure game.players exists before looping #}
+                        {% if game.players %} 
+                            {% for player in game.players %}
+                            {# Add class to highlight current player's row #}
+                            <tr class="{% if not game.game_over and loop.index0 == game.current_player_index %}current-turn-row{% endif %}">
+                                <td>{{ player.name }} {% if player.id == 0 %}(Tú){% endif %}</td>
+                                {% for round_num in range(1, game.total_rounds + 1) %}
+                                    {# Use player.round_scores dictionary directly #}
+                                    {# Using get() with default '-' is safer #}
+                                    <td>{{ player.round_scores.get(round_num, '-') }}</td> 
+                                {% endfor %}
+                                <td>{{ player.total_score }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="{{ 2 + game.total_rounds }}">No hay jugadores.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if not game.game_over %}
+                 {# Ensure current player exists before accessing name #}
+                 {% set current_player = game.get_current_player() %}
+                 {% if current_player %}
+                    <h3>Turno de: {{ current_player.name }}</h3>
+                    <p style="text-align: center; font-size: 1.2em;">Puntaje de Turno Actual: <strong>{{ game.current_round_score }}</strong></p>
+                 {% else %}
+                     <h3>Error: Jugador actual no encontrado.</h3>
+                 {% endif %}
+            {% endif %}
+
+            <div class="dice-area">
+                {% if game.current_dice and game.current_dice[0] != 0 %} {# Check if current_dice exists #}
+                    <span class="dice">{{ game.current_dice[0] }}</span>
+                    <span class="dice">{{ game.current_dice[1] }}</span>
+                {% elif not game.game_over %}
+                     <span>(Esperando tirada)</span>
+                {% endif %}
+            </div>
+
+            <div class="message">
+                 {# Check if game.message exists before displaying #}
+                <p>{{ game.message if game.message else 'Cargando...' }}</p>
+            </div>
+
+            {% if not game.game_over %}
+                 {% set current_player = game.get_current_player() %}
+                 {% if current_player and current_player.is_human %}
+                    <div class="actions" style="text-align: center; margin-top: 20px;">
+                        <form action="{{ url_for('roll_action') }}" method="post" style="display: inline;">
+                            <button type="submit">Tirar Dados</button>
+                        </form>
+                        <form action="{{ url_for('stop_action') }}" method="post" style="display: inline;">
+                            {# Disable stop button if current round score is 0 #}
+                            <button type="submit" class="stop-button" {% if game.current_round_score == 0 %}disabled{% endif %}>Parar y Guardar</button>
+                        </form>
+                    </div>
+                 {% endif %}
+            {% endif %}
+
+             {% if game.game_over %}
+             <div class="menu" style="margin-top: 20px;">
+                 <form action="{{ url_for('start_quick_game') }}" method="post">
+                     <button type="submit">Jugar Quick Game Otra Vez</button>
+                 </form>
+                 </div>
+             {% endif %}
+
+        {% else %}
+            <div class="menu">
+                <h2>Bienvenido</h2>
+                <form action="{{ url_for('start_quick_game') }}" method="post">
+                    <button type="submit">Quick Game (vs 2 Bots)</button>
+                </form>
+                </div>
+        {% endif %}
+
+    </div> </body>
+</html>
