@@ -1,3 +1,4 @@
+# game_logic.py
 import random
 
 class Player:
@@ -33,10 +34,11 @@ class Player:
              raise ValueError("Player data dictionary missing required keys (id, name, is_human)")
              
         player = cls(data['id'], data['name'], data['is_human'])
-        # **FIX:** Use .get() with default 0 for total_score to prevent KeyError
+        # Use .get() with default 0 for total_score to prevent KeyError
         player.total_score = data.get('total_score', 0) 
         player.round_scores = data.get('round_scores', {}) # Safely gets round_scores
         # Ensure scores are integers if they exist
+        # Convert keys to int as well, as JSON keys are strings
         player.round_scores = {int(k): int(v) for k, v in player.round_scores.items()}
         return player
 
@@ -157,12 +159,11 @@ class Game:
         initial_message = f"Ronda {self.current_round}. Turno del Bot: {player.name}."
         turn_messages = [] 
         
-        # *** DEBUGGING PRINT STATEMENTS ADDED HERE ***
+        # DEBUGGING PRINT STATEMENTS (can be removed later)
         print(f"DEBUG: Bot {player.name} starting turn decision.")
         print(f"DEBUG: Current Round Score = {self.current_round_score} (Type: {type(self.current_round_score)})")
         print(f"DEBUG: Bot Stop Score = {self.BOT_STOP_SCORE} (Type: {type(self.BOT_STOP_SCORE)})")
-        # *** END DEBUGGING PRINT STATEMENTS ***
-
+        
         # Ensure current_round_score is an integer before comparison
         try:
             current_score_int = int(self.current_round_score)
