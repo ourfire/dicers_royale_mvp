@@ -1,261 +1,627 @@
 /* static/styles.css */
-body { 
-    font-family: sans-serif; 
-    background-color: #2c2c2c; 
-    color: #fbff00; 
-    margin: 0; 
-    padding: 20px; 
+
+/* --- General Styles & Variables (80s Nostalgia Theme - Compact) --- */
+:root {
+    /* 80s Nostalgia Palette */
+    --background-dark: #222222;   
+    --container-bg: #333333;     
+    --section-bg: #444444;       
+    --text-light: #f5f5f5;       
+    --text-dark: #222222;        
+    --accent-pink: #ff69b4;      
+    --accent-red: #dc3545;       
+    --accent-teal: #00f0e0;      
+    --accent-purple: #9f50ff;    
+    --accent-yellow: #f0e040;    
+    --border-color: #666666;      
 }
 
+body { 
+    font-family: 'Roboto', sans-serif; 
+    background-color: var(--background-dark); 
+    color: var(--text-light); 
+    margin: 0; 
+    padding: 10px; 
+    line-height: 1.5; 
+    font-size: 14px; 
+}
+
+/* --- Layout --- */
 .game-container { 
     display: grid; 
-    grid-template-columns: 250px 1fr; 
-    /* Removed extra row definition, let content dictate height */
+    grid-template-columns: 220px 1fr; 
     grid-template-rows: auto auto 1fr auto; 
-    gap: 15px; 
-    max-width: 1000px; 
-    margin: auto; 
-    background-color: #3a3a3a; 
-    padding: 20px; 
-    border-radius: 10px; 
-    min-height: 80vh; 
-    position: relative; /* Needed for potential overlay later */ 
+    gap: 12px; 
+    max-width: 900px; 
+    margin: 15px auto; 
+    background-color: var(--container-bg); 
+    padding: 15px; 
+    border-radius: 8px; 
+    box-shadow: 0 0 10px var(--accent-purple); 
+    min-height: auto; 
+    position: relative; 
+    border: 1px solid var(--border-color);
 }
 
+/* --- Header --- */
 .header { 
     grid-column: 1 / -1; 
     text-align: center; 
-    border-bottom: 1px solid #555; 
-    padding-bottom: 10px; 
+    border-bottom: 1px solid var(--border-color); 
+    padding-bottom: 8px; 
+    margin-bottom: 6px; 
 }
 .header h1 { 
-    color: #ffcc00; 
-    margin: 0; 
+    font-family: 'Roboto', sans-serif; 
+    font-weight: 700; 
+    color: var(--accent-teal); 
+    margin: 0 0 6px 0; 
+    font-size: 2.2em; 
+    text-transform: uppercase; 
+    letter-spacing: 1.5px; 
+    text-shadow: 2px 2px 0px var(--accent-purple); 
 }
 .header-controls { 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    padding: 5px 0; 
+    padding: 2px 0; 
+    font-size: 0.8em; 
+    gap: 10px; 
 }
 .header-controls .mode-switch button { 
-    /* Estilo para botones Real/Virtual */ 
-    padding: 5px 10px; 
-    border: none; 
-    border-radius: 5px; 
+    padding: 4px 8px; 
+    border: 1px solid var(--accent-teal); 
+    border-radius: 4px; 
     cursor: pointer; 
+    background-color: var(--section-bg);
+    color: var(--text-light);
+    margin: 0 2px;
+    font-family: 'Roboto', sans-serif; 
+    font-size: 0.9em;
+}
+.header-controls .mode-switch button:hover,
+.header-controls .mode-switch button.active {
+    background-color: var(--accent-teal); 
+    color: var(--text-dark);
+    font-weight: bold;
+    border-color: var(--accent-teal);
 }
 .header-controls .wallet-display { 
-    background-color: #555; 
-    padding: 5px 10px; 
-    border-radius: 5px; 
+    background-color: var(--section-bg); 
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    border: 1px solid var(--border-color);
+    white-space: nowrap; 
+}
+.abort-button {
+    padding: 4px 10px;
+    font-size: 0.9em;
+    background-color: var(--accent-red); 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease;
+}
+.abort-button:hover {
+    background-color: #b02a37; 
 }
 
+
+/* --- Player Info Panel (Left) --- */
 .player-info { 
     grid-column: 1 / 2; 
-    grid-row: 2 / 4; /* Spans two rows */
-    background-color: #4a4a4a; 
-    padding: 15px; 
-    border-radius: 8px; 
+    grid-row: 2 / 5; 
+    background-color: var(--section-bg); 
+    padding: 12px; 
+    border-radius: 6px; 
     display: flex; 
     flex-direction: column; 
     justify-content: space-between; 
+    border: 1px solid var(--border-color);
 }
 .player-info h2 { 
     margin-top: 0; 
     text-align: center; 
+    font-size: 1.1em; 
+    color: var(--text-light);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    font-family: 'Roboto', sans-serif; 
+    font-weight: 700;
 }
+.player-info .score-display {
+    margin-bottom: 10px; 
+}
+.player-info .total-score-display {
+    font-size: 1.1em; 
+    color: #ccc; 
+    text-align: center;
+    margin-bottom: 5px; 
+    font-weight: bold;
+}
+.player-info .turn-score-display {
+    /* ** Aumentado más el tamaño ** */
+    font-size: 2.8em !important; 
+    color: var(--accent-yellow);
+    font-weight: bold;
+    margin: 5px 0 10px 0 !important; 
+    line-height: 1.1;
+    text-align: center;
+    display: block; 
+}
+
+.player-info .turn-indicator { 
+     text-align: center; 
+     font-style: italic; 
+     color: var(--accent-pink); 
+     font-weight: bold;
+     margin-bottom: 8px;
+     font-size: 0.85em;
+}
+.player-info .turn-indicator.human-player {
+     color: var(--accent-yellow); 
+}
+
+
 .player-info .dice-display { 
     text-align: center; 
-    margin: 20px 0; 
-    cursor: pointer; /* Hacer que parezca clickeable */ 
+    margin: 15px 0; 
+    cursor: pointer; 
     border: 2px dashed transparent; 
-    padding: 10px; 
-    border-radius: 5px; 
+    padding: 8px; 
+    border-radius: 6px; 
+    transition: border-color 0.3s ease; 
 }
 .player-info .dice-display.clickable:hover { 
-    border-color: #007bff; /* Resaltar al pasar el mouse si es clickeable */ 
+    border-color: var(--accent-pink); 
 }
 .player-info .dice { 
-    font-size: 2.5em; 
-    margin: 5px; 
+    font-size: 2em; 
+    margin: 4px; 
     display: inline-block; 
-    border: 1px solid #aaa; 
-    background-color: #fff; 
-    color: #333; 
-    padding: 10px 15px; 
-    min-width: 50px; 
+    border: 1px solid #777; 
+    background-color: #f0f0f0; 
+    color: var(--text-dark); 
+    padding: 8px 12px; 
+    min-width: 40px; 
     text-align: center; 
     border-radius: 5px; 
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2); 
+    box-shadow: 2px 2px 3px rgba(0,0,0,0.4); 
+    font-family: 'Roboto', sans-serif; 
+    font-weight: 700;
 }
+/* --- Dice Rolling Animation --- */
+@keyframes roll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(90deg) scale(1.1); }
+    50% { transform: rotate(180deg) scale(1); }
+    75% { transform: rotate(270deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+.dice.rolling {
+    animation: roll 0.5s linear infinite; 
+}
+
 .player-info .player-actions button { 
     width: 100%; 
-    padding: 15px; 
-    font-size: 1.2em; 
-    margin-bottom: 10px; 
+    padding: 10px; 
+    font-size: 1em; 
+    margin-bottom: 8px; 
     cursor: pointer; 
     border: none; 
     border-radius: 5px; 
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Roboto', sans-serif; 
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
-/* Ocultamos el botón Roll It original si usamos dados clickeables */
-/* .player-info .player-actions .roll-button { display: none; } */
-.player-info .player-actions .stop-button { 
-    background-color: #28a745; 
+.player-info .player-actions .roll-button { 
+    background-color: var(--accent-pink); 
     color: white; 
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+.player-info .player-actions .roll-button:hover {
+    background-color: #d15094; 
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
+.player-info .player-actions .stop-button { 
+    background-color: var(--accent-red); 
+    color: white; 
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+.player-info .player-actions .stop-button:hover {
+    background-color: #b02a37; 
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
 }
 .player-info .player-actions button:disabled { 
     background-color: #6c757d; 
     cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    text-shadow: none;
 }
 .player-info .table-info { 
     text-align: center; 
-    margin-top: 15px; 
-    font-size: 0.9em; 
+    margin-top: 10px; 
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85em; 
     color: #ccc; 
-}
-/* Estilo para el botón de Jugar Otra Vez */
-.play-again-button { 
-    background-color: #ffc107; 
-    color: #333; 
     font-weight: bold;
 }
+.play-again-button { 
+    background-color: var(--accent-yellow); 
+    color: var(--text-dark); 
+    font-weight: bold;
+}
+.play-again-button:hover {
+     background-color: #d4a01a; 
+}
 
 
+/* --- Scoreboard (Right Top) --- */
 .scoreboard { 
     grid-column: 2 / 3; 
     grid-row: 2 / 3; 
-    background-color: #4a4a4a; 
-    padding: 15px; 
-    border-radius: 8px; 
-    overflow-x: auto;
+    background-color: var(--section-bg); 
+    padding: 12px; 
+    border-radius: 6px; 
+    overflow-x: auto; 
+    border: 1px solid var(--border-color);
 }
 .scoreboard table { 
     width: 100%; 
     border-collapse: collapse; 
 }
 .scoreboard th, .scoreboard td { 
-    border: 1px solid #555; 
-    padding: 8px; 
+    border: 1px solid var(--border-color); 
+    padding: 6px; 
     text-align: center; 
+    min-width: 50px; 
 }
 .scoreboard th { 
-    background-color: #5a5a5a; 
+    background-color: var(--container-bg); 
+    text-transform: uppercase;
+    font-size: 0.75em; 
+    font-family: 'Roboto', sans-serif; 
+    font-weight: 700;
+    color: var(--accent-teal); 
+}
+.scoreboard td {
+     font-size: 0.9em; 
 }
 .scoreboard .current-turn-row { 
     font-weight: bold; 
-    background-color: #5a6a7a; 
+    background-color: rgba(159, 80, 255, 0.15); 
+}
+.scoreboard .current-turn-row td:first-child {
+     color: var(--accent-yellow); 
 }
 
+/* --- Menu Buttons (Right Middle) --- */
 .menu-buttons { 
     grid-column: 2 / 3; 
     grid-row: 3 / 4; 
-    background-color: #4a4a4a; 
-    padding: 15px; 
-    border-radius: 8px; 
+    background-color: var(--section-bg); 
+    padding: 12px; 
+    border-radius: 6px; 
     display: flex; 
     justify-content: space-around; 
     align-items: center; 
     flex-wrap: wrap; 
+    border: 1px solid var(--border-color);
 }
 .menu-buttons button { 
-    background-color: #6c757d; 
-    color: white; 
-    padding: 10px 15px; 
-    border: none; 
+    background-color: #555; 
+    color: var(--accent-teal); 
+    padding: 8px 12px; 
+    border: 1px solid var(--accent-teal); 
     border-radius: 5px; 
     cursor: pointer; 
-    font-size: 0.9em; 
-    margin: 5px;
+    font-size: 0.85em; 
+    margin: 4px; 
+    display: flex; 
+    align-items: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: bold;
 }
-/* Iconos placeholder - reemplazar con imágenes o font icons */
+.menu-buttons button:hover {
+    background-color: var(--accent-teal);
+    color: var(--text-dark);
+}
 .menu-buttons button::before { 
-    content: '⚙️'; 
+    content: '►'; 
     margin-right: 5px; 
+    font-size: 1em;
 } 
+/* Specific icons */
+.menu-buttons button:nth-child(1)::before { content: '⚡'; } 
+.menu-buttons button:nth-child(2)::before { content: '🚪'; } 
+.menu-buttons button:nth-child(3)::before { content: '➕'; } 
+.menu-buttons button:nth-child(4)::before { content: '🤖'; } 
+.menu-buttons button:nth-child(5)::before { content: '✉️'; } 
 
+
+/* --- Chat (Right Bottom) --- */
 .chat { 
     grid-column: 2 / 3; 
     grid-row: 4 / 5; 
-    background-color: #4a4a4a; 
-    padding: 15px; 
-    border-radius: 8px; 
+    background-color: var(--section-bg); 
+    padding: 12px; 
+    border-radius: 6px; 
     display: flex; 
     flex-direction: column; 
+    border: 1px solid var(--border-color);
+}
+.chat h3 { 
+     margin-top: 0;
+     text-align: center;
+     color: var(--accent-teal); 
+     padding-bottom: 6px;
+     border-bottom: 1px solid var(--border-color);
+     margin-bottom: 8px;
+     text-transform: uppercase;
+     font-size: 0.9em; 
+     font-family: 'Roboto', sans-serif; 
+     font-weight: 700;
 }
 .chat .messages { 
     flex-grow: 1; 
-    background-color: #3a3a3a; 
-    border-radius: 5px; 
-    padding: 10px; 
-    margin-bottom: 10px; 
+    background-color: var(--container-bg); 
+    border-radius: 4px; 
+    border: 1px solid var(--border-color);
+    padding: 8px; 
+    margin-bottom: 8px; 
     overflow-y: auto; 
-    height: 100px; /* Altura limitada para demo */
+    height: 80px; 
+    font-size: 0.8em; 
+}
+.chat .messages p { 
+     margin: 0 0 5px 0;
+     padding-bottom: 3px;
+     border-bottom: 1px dashed #555;
+}
+.chat .messages p:last-child {
+     border-bottom: none;
+     margin-bottom: 0;
 }
 .chat input[type="text"] { 
-    padding: 10px; 
-    border: none; 
-    border-radius: 5px; 
+    padding: 8px; 
+    border: 1px solid var(--border-color); 
+    border-radius: 4px; 
     background-color: #555; 
-    color: #eee; 
+    color: var(--text-light); 
     flex-grow: 1; 
-    margin-right: 10px;
+    margin-right: 6px;
+    font-size: 0.85em; 
 }
 .chat button { 
-    background-color: #007bff; 
+    background-color: var(--accent-purple); 
     color: white; 
-    padding: 10px 15px; 
+    padding: 8px 12px; 
     border: none; 
-    border-radius: 5px; 
+    border-radius: 4px; 
     cursor: pointer; 
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    transition: background-color 0.2s ease;
+}
+.chat button:hover {
+    background-color: #7a50cc; 
 }
 .chat .chat-input { 
     display: flex; 
 }
 
-/* Message Log Footer - REMOVED */
-/* .message-log { ... } */
+/* --- Initial Menu (Now part of main layout) --- */
+/* Styles specific to when no game is active can be added if needed */
 
-/* Estilos para el menú inicial */
-.initial-menu { 
-    text-align: center; 
-    padding: 50px; 
+
+/* Styles for Create Game Form */
+.create-game-form {
+    background-color: var(--section-bg);
+    padding: 15px; 
+    margin-top: 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    max-width: 350px; 
+    margin-left: auto;
+    margin-right: auto;
+    position: fixed; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100; 
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
 }
-.initial-menu button { 
-    padding: 15px 30px; 
-    font-size: 1.3em; 
-    cursor: pointer; 
-    border: none; 
-    border-radius: 5px; 
-    background-color: #007bff; 
-    color: white; 
+/* Fondo oscuro cuando el modal está activo */
+body.modal-open::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 99; 
 }
 
-/* Estilos para el mensaje de Game Over */
-.game-over-banner {
-    grid-column: 1 / -1; /* Ocupa todo el ancho */
-    grid-row: 2 / 5; /* Se superpone sobre el contenido principal */
-    background-color: rgba(0, 0, 0, 0.75); /* Fondo semitransparente */
-    color: white;
-    padding: 40px 20px;
+.create-game-form h3 {
     text-align: center;
-    border-radius: 10px;
-    z-index: 10; /* Asegura que esté por encima de otros elementos */
-    display: flex; /* Usar flexbox para centrar contenido */
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: var(--accent-teal);
+    font-family: 'Roboto', sans-serif; 
+    font-weight: 700;
+    font-size: 1em; 
+    text-transform: uppercase;
+}
+.create-game-form label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+    color: var(--text-light);
+    font-size: 0.9em; 
+}
+.create-game-form select, 
+.create-game-form input[type="number"] { 
+    width: 100%;
+    padding: 8px; 
+    margin-bottom: 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: #555;
+    color: var(--text-light);
+    font-size: 0.9em; 
+    box-sizing: border-box; 
+}
+.create-game-form button[type="submit"] { 
+    width: 100%;
+    padding: 10px; 
+    font-size: 1em; 
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--accent-purple); 
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+ .create-game-form button[type="submit"]:hover {
+     background-color: #7a50cc;
+ }
+ .create-game-form .close-button { 
+     position: absolute;
+     top: 5px;
+     right: 10px;
+     background: none;
+     border: none;
+     color: var(--text-light);
+     font-size: 1.8em; 
+     cursor: pointer;
+     padding: 0;
+     line-height: 1;
+ }
+ .create-game-form .close-button:hover { 
+     color: var(--accent-red); 
+ }
+ .hidden {
+     display: none;
+ }
+ .flash-messages { 
+     list-style: none;
+     padding: 0;
+     margin: 10px 0 15px 0; 
+ }
+ .flash-messages li {
+     padding: 8px 12px; 
+     margin-bottom: 8px;
+     border-radius: 4px;
+     text-align: center;
+     font-size: 0.9em;
+ }
+ .flash-messages li.error {
+     background-color: var(--accent-red);
+     color: white;
+ }
+ .flash-messages li.success { 
+     background-color: #28a745; 
+      color: white;
+ }
+
+
+/* --- Game Over Banner --- */
+.game-over-banner {
+    grid-column: 1 / -1; 
+    grid-row: 2 / 5; 
+    background-color: rgba(34, 34, 34, 0.9); 
+    color: white;
+    padding: 30px 15px; 
+    text-align: center;
+    border-radius: 8px;
+    z-index: 10; 
+    display: flex; 
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    border: 2px solid var(--accent-yellow);
 }
 .game-over-banner h2 {
-    font-size: 2.5em;
+    font-family: 'Roboto', sans-serif; 
+    font-weight: 700;
+    font-size: 2.5em; 
     margin-bottom: 20px;
-    color: #ffc107; /* Color destacado */
+    color: var(--accent-yellow); 
+    text-transform: uppercase;
+    text-shadow: 2px 2px 0px var(--accent-red); 
 }
  .game-over-banner p {
-     font-size: 1.5em;
-     margin-bottom: 30px;
+     font-size: 1.3em; 
+     margin-bottom: 25px; 
  }
-.game-over-banner button {
-    padding: 15px 30px;
-    font-size: 1.3em;
+.game-over-banner button { 
+    padding: 12px 25px; 
+    font-size: 1.1em; 
+    background-color: var(--accent-yellow); 
+    color: var(--text-dark); 
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-transform: uppercase;
+    margin: 5px; 
 }
+.game-over-banner button:hover {
+     background-color: #d4a01a;
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 768px) {
+    body { padding: 5px; font-size: 13px;} 
+    .game-container {
+        grid-template-columns: 1fr; 
+        grid-template-rows: auto auto auto auto auto auto; 
+        padding: 10px; 
+        min-height: auto;
+        gap: 10px; 
+    }
+    .player-info { grid-row: 2 / 3; padding: 10px;}
+    .scoreboard { grid-row: 3 / 4; padding: 10px;}
+    .menu-buttons { grid-row: 4 / 5; padding: 10px;}
+    .chat { grid-row: 5 / 6; padding: 10px;}
+    .game-over-banner { grid-row: 2 / 6; padding: 15px;}
+
+    .header h1 { font-size: 1.6em; }
+    .player-info h2 { font-size: 1em; }
+    /* Adjust score sizes for mobile */
+    .player-info .total-score-display { font-size: 1em; } 
+    .player-info .turn-score-display { font-size: 1.8em !important; margin: 8px 0 !important;} /* Slightly larger on mobile */
+    .player-info .dice { font-size: 1.8em; padding: 5px 8px; min-width: 35px;}
+    .player-info .player-actions button { font-size: 0.9em; padding: 8px; }
+    .scoreboard th { font-size: 0.65em; padding: 5px;}
+    .scoreboard td { font-size: 0.8em; padding: 5px;}
+    .menu-buttons button { font-size: 0.75em; padding: 6px 10px; margin: 3px; }
+    .chat h3 { font-size: 0.8em; }
+    .chat .messages { height: 70px; font-size: 0.75em;}
+    .chat input[type="text"] { padding: 6px; font-size: 0.8em;}
+    .chat button { padding: 6px 10px; font-size: 0.8em;}
+    .game-over-banner h2 { font-size: 1.6em; }
+    .game-over-banner p { font-size: 1em; }
+    .game-over-banner button { font-size: 0.9em; padding: 8px 18px; }
+    /* Remove initial menu responsive styles */
+    .create-game-form { padding: 10px; max-width: 90%; }
+    .create-game-form h3 { font-size: 0.9em; }
+    .create-game-form label { font-size: 0.8em; }
+    .create-game-form select, .create-game-form input[type="number"] { padding: 6px; font-size: 0.85em; }
+    .create-game-form button { padding: 8px; font-size: 0.9em; }
+}
+
