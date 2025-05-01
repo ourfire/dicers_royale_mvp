@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <style>
-        /* Estilos adicionales para el formulario Create Game */
-        /* (Estilos del formulario sin cambios) */
+        /* Estilos adicionales para el formulario Create Game y Modal Instrucciones */
+        /* (Estilos del formulario Create Game sin cambios) */
         .create-game-form { background-color: var(--section-bg); padding: 15px; margin-top: 15px; border-radius: 6px; border: 1px solid var(--border-color); max-width: 350px; margin-left: auto; margin-right: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         body.modal-open::after { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 99; }
         .create-game-form h3 { text-align: center; margin-top: 0; margin-bottom: 12px; color: var(--accent-teal); font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 1em; text-transform: uppercase; }
@@ -19,36 +19,99 @@
         .create-game-form select, .create-game-form input[type="number"] { width: 100%; padding: 8px; margin-bottom: 12px; border-radius: 4px; border: 1px solid var(--border-color); background-color: #555; color: var(--text-light); font-size: 0.9em; box-sizing: border-box; }
         .create-game-form button[type="submit"] { width: 100%; padding: 10px; font-size: 1em; cursor: pointer; border: none; border-radius: 5px; background-color: var(--accent-purple); color: white; font-weight: bold; text-transform: uppercase; }
         .create-game-form button[type="submit"]:hover { background-color: #7a50cc; }
-        .create-game-form .close-button { position: absolute; top: 5px; right: 10px; background: none; border: none; color: var(--text-light); font-size: 1.8em; /* Slightly larger */ cursor: pointer; padding: 0; line-height: 1; }
+        .create-game-form .close-button { position: absolute; top: 5px; right: 10px; background: none; border: none; color: var(--text-light); font-size: 1.8em; cursor: pointer; padding: 0; line-height: 1; }
         .create-game-form .close-button:hover { color: var(--accent-red); }
          
          /* Estilos para mensajes flash */
-         .flash-messages { list-style: none; padding: 0; margin: 10px 0 15px 0; }
-         .flash-messages li { padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; text-align: center; font-size: 0.9em; }
+         .flash-messages { list-style: none; padding: 0; margin: 10px 0 15px 0; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 101; width: 80%; max-width: 500px;}
+         .flash-messages li { padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; text-align: center; font-size: 0.9em; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
          .flash-messages li.error { background-color: var(--accent-red); color: white; }
          .flash-messages li.success { background-color: #28a745; color: white; }
          
-         /* ** NUEVO: Estilos para separar puntajes ** */
-         .player-info .total-score-display {
-             font-size: 1.1em; /* Tamaño normal/grande */
-             color: #ccc; /* Color más tenue */
-             text-align: center;
-             margin-bottom: 5px; 
-             font-weight: bold;
-         }
-         .player-info .turn-score-display {
-             font-size: 2.2em !important; /* Aún más grande */
-             color: var(--accent-yellow);
-             font-weight: bold;
-             margin: 5px 0 10px 0 !important; 
-             line-height: 1.1;
-             text-align: center;
-             display: block; /* Asegurar que ocupe su línea */
-         }
+         /* Estilos para separar puntajes */
+         .player-info .total-score-display { font-size: 1.1em; color: #ccc; text-align: center; margin-bottom: 5px; font-weight: bold; }
+         .player-info .turn-score-display { font-size: 2.2em !important; color: var(--accent-yellow); font-weight: bold; margin: 5px 0 10px 0 !important; line-height: 1.1; text-align: center; display: block; }
          /* Estilo para indicar el jugador humano actual */
          .player-info .turn-indicator.human-player { color: var(--accent-yellow); font-weight: bold; }
          /* Clase para ocultar elementos */
          .hidden { display: none; }
+
+         /* ** NUEVO: Estilos para el modal de instrucciones ** */
+         .instructions-modal {
+             background-color: var(--section-bg);
+             padding: 25px 30px; /* Más padding horizontal */
+             border-radius: 8px;
+             border: 1px solid var(--border-color);
+             max-width: 600px; /* Ancho del modal */
+             margin-left: auto;
+             margin-right: auto;
+             position: fixed; 
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%);
+             z-index: 100; 
+             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+             color: var(--text-light); /* Asegurar color de texto */
+         }
+         .instructions-modal h3 {
+             text-align: center;
+             margin-top: 0;
+             margin-bottom: 20px; /* Más espacio */
+             color: var(--accent-teal);
+             font-family: 'Roboto', sans-serif; 
+             font-weight: 700;
+             font-size: 1.3em; /* Título más grande */
+             text-transform: uppercase;
+             border-bottom: 1px solid var(--border-color); /* Separador */
+             padding-bottom: 10px;
+         }
+          .instructions-modal p, .instructions-modal ul {
+              font-size: 1em; /* Tamaño de texto normal */
+              margin-bottom: 15px;
+              line-height: 1.7;
+          }
+          .instructions-modal ul {
+               padding-left: 25px; /* Más indentación */
+          }
+          .instructions-modal li {
+               margin-bottom: 8px; /* Espacio entre puntos */
+          }
+         .instructions-modal .close-button { 
+             position: absolute;
+             top: 10px; /* Ajustar posición */
+             right: 15px;
+             background: none;
+             border: none;
+             color: var(--text-light);
+             font-size: 1.8em; 
+             cursor: pointer;
+             padding: 0;
+             line-height: 1;
+         }
+         .instructions-modal .close-button:hover { 
+             color: var(--accent-red); 
+         }
+         /* Estilo para el botón que abre las instrucciones */
+         .header-button { /* Estilo general para botones pequeños en header */
+             background: none;
+             border: 1px solid var(--accent-teal);
+             color: var(--accent-teal);
+             font-weight: bold;
+             border-radius: 50%; /* Hacerlo redondo */
+             width: 28px; /* Tamaño fijo */
+             height: 28px;
+             line-height: 26px; /* Centrar el '?' verticalmente */
+             text-align: center;
+             cursor: pointer;
+             font-size: 1.1em;
+             padding: 0;
+             transition: all 0.2s ease;
+             margin: 0 5px; /* Espacio alrededor */
+         }
+         .header-button:hover {
+             background-color: var(--accent-teal);
+             color: var(--text-dark);
+         }
     </style>
 </head>
 <body>
@@ -70,6 +133,8 @@
                 <div class="mode-switch">
                     <button>REAL</button> / <button class="active">VIRTUAL</button> MODE 
                 </div>
+                {# ** NUEVO: Botón para mostrar instrucciones ** #}
+                <button type="button" id="show-instructions-button" class="header-button">?</button> 
                 {% if game and not game.game_over %}
                 <form action="{{ url_for('reset_game') }}" method="post" style="margin: 0;">
                     <button type="submit" class="abort-button" onclick="return confirm('¿Seguro que quieres salir de la partida actual?');">Salir</button>
@@ -81,25 +146,24 @@
             </div>
         </header>
 
+        {# ... (Resto del game-container sin cambios estructurales) ... #}
+        
         <aside class="player-info">
             <div>
-                {% set current_player = game.get_current_player() if game else None %} {# Asegurar que current_player existe #}
+                {% set current_player = game.get_current_player() if game else None %} 
                 <h2>{{ current_player.name if current_player else 'Player Info' }}</h2> 
                 
-                {# ** Estructura de puntajes separada ** #}
                 <div class="score-display">
                      <div class="total-score-display">Total = {{ current_player.total_score if current_player else '-' }}</div>
                      {% if game and not game.game_over %}
                      <div class="turn-score-display">Turn = {{ game.current_round_score }}</div>
                      {% else %}
-                      {# Mostrar algo si no hay puntaje de turno (ej. juego no iniciado o terminado) #}
                        <div class="turn-score-display">-</div> 
                      {% endif %}
                 </div>
 
                 {% if game and not game.game_over and current_player %}
                     {% if current_player.is_human %}
-                        {# ** Indicar qué jugador humano es ** #}
                         <p class="turn-indicator human-player">¡Turno de {{ current_player.name }}!</p> 
                     {% else %}
                          <p class="turn-indicator">Turno del Bot...</p>
@@ -118,7 +182,6 @@
                 </div>
             </div>
             <div> 
-                 {# ** Mostrar botones SOLO si es el turno de un jugador HUMANO ** #}
                  {% if game and not game.game_over and current_player and current_player.is_human %}
                     <div class="player-actions">
                         <form id="roll-form" action="{{ url_for('roll_action') }}" method="post" style="display: none;"> 
@@ -134,14 +197,11 @@
                  </div>
             </div>
         </aside>
-
         <section class="scoreboard">
-             {# Mostrar scoreboard o mensaje si no hay juego #}
              <table>
                 <thead>
                     <tr>
                         <th>player</th>
-                        {# Mostrar cabeceras de ronda basadas en el juego o por defecto #}
                         {% set rounds_to_show = game.total_rounds if game else 3 %}
                         {% for round_num in range(1, rounds_to_show + 1) %}
                             <th>R{{ round_num }}</th> 
@@ -152,9 +212,7 @@
                 <tbody>
                     {% if game and game.players %} 
                         {% for player in game.players %}
-                        {# Añadir clase para destacar fila del jugador actual #}
                         <tr class="{% if not game.game_over and loop.index0 == game.current_player_index %}current-turn-row{% endif %}">
-                            {# ** Mostrar nombre y tipo (H/B) ** #}
                             <td>{{ player.name }} {% if player.is_human %}(H){% else %}(B){% endif %}</td> 
                             {% for round_num in range(1, rounds_to_show + 1) %}
                                 <td>{{ player.round_scores.get(round_num, '-') }}</td> 
@@ -163,24 +221,20 @@
                         </tr>
                         {% endfor %}
                     {% else %}
-                         <tr><td colspan="{{ 2 + rounds_to_show }}">Esperando jugadores...</td></tr>
+                         <tr><td colspan="{{ 2 + rounds_to_show }}">Esperando partida...</td></tr>
                     {% endif %}
                 </tbody>
             </table>
         </section>
-
         <nav class="menu-buttons">
-             {# El botón Quick Game ahora debe ser un formulario POST #}
              <form action="{{ url_for('start_quick_game') }}" method="post" style="display: inline;">
                  <button type="submit">quick Game</button>
              </form>
             <button>join a table</button>
-            {# Botón Create Game ahora solo muestra el formulario modal #}
             <button type="button" id="create-game-menu-button">create game</button> 
             <button>add bots</button>
             <button>invite friend</button>
         </nav>
-
         <section class="chat">
              <h3>Chat</h3> 
             <div class="messages">
@@ -192,8 +246,6 @@
                 <button>Send</button> 
             </div>
         </section>
-
-        {# Banner de Game Over - Se muestra solo si el juego terminó #}
         {% if game and game.game_over %}
         <div class="game-over-banner">
             <h2>¡Juego Terminado!</h2>
@@ -206,38 +258,48 @@
              </form>
         </div>
         {% endif %}
-
-    </div> {# Formulario Create Game - Movido fuera del flujo principal, oculto por defecto #}
+    </div> {# Formulario Create Game (Modal) #}
     <form action="{{ url_for('create_game') }}" method="post" id="create-game-form" class="create-game-form hidden">
-         {# ** FIX: Botón de cierre es tipo button, sin onclick aquí ** #}
          <button type="button" class="close-button">&times;</button> 
          <h3>Crear Partida Local</h3>
-         
          <label for="num_total_players">Número Total de Jugadores:</label>
-         <select id="num_total_players" name="num_total_players" required onchange="updateHumanOptions()"> {# Added onchange #}
+         <select id="num_total_players" name="num_total_players" required onchange="updateHumanOptions()"> 
              {% for i in range(min_players, max_players + 1) %}
                  <option value="{{ i }}" {% if i == 3 %}selected{% endif %}>{{ i }}</option> 
              {% endfor %}
          </select>
-
          <label for="num_humans">Número de Jugadores Humanos:</label>
          <select id="num_humans" name="num_humans" required>
-              {# Options will be populated by JavaScript #}
               <option value="1" selected>1</option> 
               <option value="2">2</option> 
               <option value="3">3</option> 
          </select>
          <small style="display: block; margin-top: -10px; margin-bottom: 10px; font-size: 0.8em;">(El resto serán Bots)</small>
-
          <label for="num_rounds">Número de Rondas:</label>
          <select id="num_rounds" name="num_rounds" required>
               {% for i in range(min_rounds, max_rounds + 1) %}
                  <option value="{{ i }}" {% if i == default_rounds %}selected{% endif %}>{{ i }}</option> 
               {% endfor %}
          </select>
-
          <button type="submit">Crear Partida</button>
     </form>
+    
+    {# ** NUEVO: Modal de Instrucciones ** #}
+    <div id="instructions-modal" class="instructions-modal hidden">
+        {# ** Añadido botón de cierre aquí también ** #}
+        <button type="button" class="close-button">&times;</button> 
+        <h3>Cómo Jugar a Dicers Royale</h3>
+        <p>¡El objetivo es ser el jugador con más puntos al final de las rondas!</p>
+        <ul>
+            <li>En tu turno, puedes lanzar dos dados tantas veces como quieras haciendo clic en los dados o en "Roll It".</li>
+            <li>Cada tirada suma puntos a tu puntaje de turno actual, **excepto** si sacas un par (dos números iguales).</li>
+            <li><strong>¡Cuidado!</strong> Si sacas un par, pierdes **todos** los puntos acumulados en ese turno y tu turno termina inmediatamente.</li>
+            <li>Puedes decidir **"Parar" (Stop)** en cualquier momento antes de sacar un par. Al parar, los puntos de tu turno actual se suman a tu puntaje total y pasa el turno al siguiente jugador.</li>
+            <li>La partida dura un número fijo de rondas (normalmente 3).</li>
+            <li>Gana el jugador con el puntaje total más alto al finalizar la última ronda.</li>
+        </ul>
+        <p>¡Calcula el riesgo y decide cuándo parar para asegurar tus puntos!</p>
+    </div>
     
 
     <script>
@@ -284,70 +346,77 @@
          const createGameMenuButton = document.getElementById('create-game-menu-button'); 
          const createGameForm = document.getElementById('create-game-form');
          const bodyElement = document.body; 
-         // ** FIX: Seleccionar el botón de cerrar DENTRO del formulario **
-         const closeFormButton = createGameForm?.querySelector('.close-button'); 
+         const closeCreateFormButton = createGameForm?.querySelector('.close-button'); 
 
-         // Función para mostrar/ocultar
          function toggleCreateForm() {
               if (createGameForm) {
-                   console.log("Toggling create game form visibility."); // Debug
                    createGameForm.classList.toggle('hidden');
                    bodyElement.classList.toggle('modal-open'); 
-              } else {
-                   console.error("Create game form element not found!"); // Debug
-              }
+              } else { console.error("Create game form element not found!"); }
          }
 
-         // Listener para el botón en la barra de menú
          if (createGameMenuButton) {
-              createGameMenuButton.addEventListener('click', () => {
-                   console.log("Create game menu button clicked");
-                   toggleCreateForm(); 
-              });
+              createGameMenuButton.addEventListener('click', toggleCreateForm); 
          }
-         
-         // ** FIX: Asegurar que el listener del botón de cerrar se añade correctamente **
-         if (closeFormButton) {
-              console.log("Adding listener to close button"); // Debug
-              closeFormButton.addEventListener('click', toggleCreateForm); // Llama a la misma función para cerrar
+         if (closeCreateFormButton) {
+              closeCreateFormButton.addEventListener('click', toggleCreateForm); 
+         }
+
+         // --- NUEVO: Lógica para mostrar/ocultar Modal de Instrucciones ---
+         const instructionsModal = document.getElementById('instructions-modal');
+         const showInstructionsButton = document.getElementById('show-instructions-button');
+         const closeInstructionsButton = instructionsModal?.querySelector('.close-button'); // Selecciona el botón de cierre DENTRO del modal
+
+          function toggleInstructionsModal() {
+              if (instructionsModal) {
+                   console.log("Toggling instructions modal visibility."); // Debug
+                   instructionsModal.classList.toggle('hidden');
+                   bodyElement.classList.toggle('modal-open'); // Reutilizar clase para oscurecer fondo
+              } else { console.error("Instructions modal element not found!"); }
+         }
+
+         if (showInstructionsButton) {
+              showInstructionsButton.addEventListener('click', toggleInstructionsModal);
+         }
+         if (closeInstructionsButton) {
+              // Asegurarse de añadir el listener al botón correcto
+              console.log("Adding listener to instructions close button"); // Debug
+              closeInstructionsButton.addEventListener('click', toggleInstructionsModal);
          } else {
-              // Si el formulario se carga dinámicamente o hay algún retraso,
-              // el botón podría no existir al ejecutar este script.
-              // Una alternativa es usar delegación de eventos en un contenedor padre.
-              console.log("Close button not found inside form initially."); // Debug
+              console.log("Instructions close button not found"); // Debug
          }
+
 
          // ** JS para actualizar opciones de humanos dinámicamente **
          const totalPlayersSelect = document.getElementById('num_total_players');
          const humanPlayersSelect = document.getElementById('num_humans');
-         const minHumans = {{ min_humans }}; // Obtener de Flask
+         const minHumans = {{ min_humans }}; 
 
          function updateHumanOptions() {
              if (!totalPlayersSelect || !humanPlayersSelect) return; 
-             
              const selectedTotal = parseInt(totalPlayersSelect.value);
-             const currentHumanValue = parseInt(humanPlayersSelect.value); 
-
+             let currentHumanValue = parseInt(humanPlayersSelect.value); 
+             if (isNaN(currentHumanValue)) { currentHumanValue = 1; }
              humanPlayersSelect.innerHTML = ''; 
-
              for (let i = minHumans; i <= selectedTotal; i++) {
                  const option = document.createElement('option');
                  option.value = i;
                  option.textContent = i;
-                 // Mantener selección si es válida, si no, default a 1
-                 if (i === currentHumanValue && currentHumanValue <= selectedTotal) {
-                      option.selected = true;
-                 } else if (i === minHumans && (isNaN(currentHumanValue) || currentHumanValue > selectedTotal) ) {
-                      option.selected = true; 
-                 }
+                 if (i === currentHumanValue && currentHumanValue <= selectedTotal) { option.selected = true; } 
+                 else if (i === minHumans && (currentHumanValue > selectedTotal) ) { option.selected = true; }
                  humanPlayersSelect.appendChild(option);
+             }
+             if (humanPlayersSelect.selectedIndex === -1 && humanPlayersSelect.options.length > 0) {
+                 humanPlayersSelect.options[0].selected = true;
              }
          }
 
+         // Añadir listener al selector de total de jugadores y llamar al inicio
          if (totalPlayersSelect) {
               totalPlayersSelect.addEventListener('change', updateHumanOptions);
-              // Llamar una vez al inicio para establecer las opciones correctas
-              updateHumanOptions(); 
+              // Llamar al inicio para asegurar que las opciones estén correctas
+              // Usar DOMContentLoaded para asegurar que los elementos existan
+               document.addEventListener('DOMContentLoaded', updateHumanOptions);
          }
 
     </script>
